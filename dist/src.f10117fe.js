@@ -117,9 +117,92 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/index.ts":[function(require,module,exports) {
-console.log('Ciao');
-},{}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+})({"src/models/User.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.User = void 0; // created a class User
+
+var User =
+/** @class */
+function () {
+  // the constructor has a data arguments who cointains the interface with the interested props
+  function User(data) {
+    this.data = data; // events is going to be an object, we do not know what the different keys are going to be,
+    // but we do know they will be strings and all this different keys are going to point at values
+    // that are an array of Callback functions
+
+    this.events = {};
+  } // we created a get method to retrieces the properties
+
+
+  User.prototype.get = function (propName) {
+    return this.data[propName];
+  }; // created a set method
+  // This basically says:
+  // take all the properties on update and alle the values on there and just copy paste over
+  // onto this.data and override all the properties on this.data
+
+
+  User.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  }; // creating the method on with a string as the first argument and a function as the second
+  // we are saying that Callback is going to be a function with no argument and no return value
+
+
+  User.prototype.on = function (eventName, callback) {
+    var handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+
+  User.prototype.trigger = function (eventName) {
+    var handlers = this.events[eventName];
+
+    if (!handlers || handlers.length === 0) {
+      return;
+    }
+
+    handlers.forEach(function (callback) {
+      callback();
+    });
+  };
+
+  return User;
+}();
+
+exports.User = User;
+},{}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var User_1 = require("./models/User");
+
+var user = new User_1.User({
+  name: 'myname',
+  age: 20
+});
+user.on('change', function () {
+  console.log('Change1');
+});
+user.on('change', function () {
+  console.log('Change2');
+});
+user.on('save', function () {
+  'Save triggered';
+});
+user.trigger('change');
+/* user.set({name: 'newname', age: 35});
+
+console.log(user.get('name'));
+
+console.log(user.get('age')); */
+},{"./models/User":"src/models/User.ts"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -147,7 +230,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55709" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63442" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
