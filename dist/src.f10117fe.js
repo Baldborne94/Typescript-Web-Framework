@@ -1901,7 +1901,7 @@ module.exports.default = axios;
 
 },{"./utils":"node_modules/axios/lib/utils.js","./helpers/bind":"node_modules/axios/lib/helpers/bind.js","./core/Axios":"node_modules/axios/lib/core/Axios.js","./core/mergeConfig":"node_modules/axios/lib/core/mergeConfig.js","./defaults":"node_modules/axios/lib/defaults.js","./cancel/Cancel":"node_modules/axios/lib/cancel/Cancel.js","./cancel/CancelToken":"node_modules/axios/lib/cancel/CancelToken.js","./cancel/isCancel":"node_modules/axios/lib/cancel/isCancel.js","./helpers/spread":"node_modules/axios/lib/helpers/spread.js"}],"node_modules/axios/index.js":[function(require,module,exports) {
 module.exports = require('./lib/axios');
-},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/index.ts":[function(require,module,exports) {
+},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -1913,16 +1913,105 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.User = void 0;
 
-var axios_1 = __importDefault(require("axios"));
+var axios_1 = __importDefault(require("axios")); // created a class User
+
+
+var User =
+/** @class */
+function () {
+  // the constructor has a data arguments who cointains the interface with the interested props
+  function User(data) {
+    this.data = data; // events is going to be an object, we do not know what the different keys are going to be,
+    // but we do know they will be strings and all this different keys are going to point at values
+    // that are an array of Callback functions
+
+    this.events = {};
+  } // we created a get method to retrieces the properties
+
+
+  User.prototype.get = function (propName) {
+    return this.data[propName];
+  }; // created a set method
+  // This basically says:
+  // take all the properties on update and alle the values on there and just copy paste over
+  // onto this.data and override all the properties on this.data
+
+
+  User.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  }; // creating the method on with a string as the first argument and a function as the second
+  // we are saying that Callback is going to be a function with no argument and no return value
+
+
+  User.prototype.on = function (eventName, callback) {
+    var handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+
+  User.prototype.trigger = function (eventName) {
+    var handlers = this.events[eventName];
+
+    if (!handlers || handlers.length === 0) {
+      return;
+    }
+
+    handlers.forEach(function (callback) {
+      callback();
+    });
+  };
+
+  User.prototype.fetch = function () {
+    var _this = this; // request of the current user using the id
+
+
+    axios_1.default.get("http://localhost:3000/users/" + this.get('id')).then(function (response) {
+      _this.set(response.data);
+    });
+  };
+
+  User.prototype.save = function () {
+    var id = this.get('id');
+
+    if (id) {
+      //put
+      axios_1.default.put("http://localhost:3000/users/" + id, this.data);
+    } else {
+      //post
+      axios_1.default.post('http://localhost:3000/users', this.data);
+    }
+  };
+
+  return User;
+}();
+
+exports.User = User;
+},{"axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var User_1 = require("./models/User"); //const user = new User({id:1});
+//user.fetch();    
+//user. set({name:'ALESSANDRO', age:88});
+
+
+var user = new User_1.User({
+  name: 'new record',
+  age: 0
+});
+user.save();
 /* axios.post('http://localhost:3000/users', {
   name:'name',
   age:20
 
 }); */
+//axios.get('http://localhost:3000/users/1');
 
-
-axios_1.default.get('http://localhost:3000/users/1');
 /* import {User} from './models/User';
 
 const user = new User({name: 'myname', age: 20});
@@ -1944,7 +2033,7 @@ user.trigger('change'); */
 console.log(user.get('name'));
 
 console.log(user.get('age')); */
-},{"axios":"node_modules/axios/index.js"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./models/User":"src/models/User.ts"}],"../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
